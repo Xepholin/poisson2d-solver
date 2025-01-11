@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 4
-
-void build_matrix(size_t n, int index[n], int col_id[n], int values[n])	{
+void build_matrix(size_t n, int index[n*n], int col_id[5 * (n*n) - 4*n], int values[5 * (n*n) - 4*n])	{
 	int count = 0;
     index[0] = 0;
     
@@ -15,7 +13,7 @@ void build_matrix(size_t n, int index[n], int col_id[n], int values[n])	{
                 count++;
             }
 			
-			if (i < N - 1)	{
+			if (i < n - 1)	{
 				values[count] = -1;
 				col_id[count] = (i+1) * n + j;
                 count++;
@@ -27,7 +25,7 @@ void build_matrix(size_t n, int index[n], int col_id[n], int values[n])	{
 				count++;
 			}
 			
-			if (j < N - 1)	{
+			if (j < n - 1)	{
 				values[count] = -1;
 				col_id[count] = i * n + (j+1);
                 count++;
@@ -42,19 +40,32 @@ void build_matrix(size_t n, int index[n], int col_id[n], int values[n])	{
     }
 }
 
-void jacobi()	{
-
+void jacobi(size_t n, int a[n], int threshold, size_t max_iter)	{
+	//
 }
 
-void gs()	{
-
+void gs(size_t n, int a[n], int threshold, size_t max_iter)	{
+	//
 }
 
-int main(void)	{
-	size_t size = N * N;
-    int *index = malloc(sizeof(int) * size);
-    int *col_id = malloc(sizeof(int) * size * N);
-    int *values = malloc(sizeof(int) * size * N);
+int main(int argc, char *argv[])	{
+	if (argc != 2)	{
+		perror("expected 1 argument (dim)");
+		exit(EXIT_FAILURE);
+	}
+
+	size_t n = strtol(argv[1], NULL, 10);
+	
+	if (n < 2)	{
+		perror("first argument dim > 1");
+		exit(EXIT_FAILURE);
+	}
+
+	size_t size = n * n;
+	size_t total = 5 * size - 4 * n;
+	int *index = aligned_alloc(32, sizeof(int) * size);
+    int *col_id = aligned_alloc(32, sizeof(int) * total);
+    int *values = aligned_alloc(32, sizeof(int) * total);
 	
 	if (!index || !col_id || !values)	{
 		perror("Error allocation CSR");
@@ -64,7 +75,7 @@ int main(void)	{
 		exit(EXIT_FAILURE);
 	}
 
-	build_matrix(N, index, col_id, values);
+	build_matrix(n, index, col_id, values);
 	
 	for (size_t i = 0; i < size; ++i)	{
 		printf("%d ", index[i]);
@@ -72,7 +83,7 @@ int main(void)	{
 
 	printf("\n");
 
-	for (size_t i = 0; i < size * N; ++i)	{
+	for (size_t i = 0; i < total ; ++i)	{
 		printf("(%d %d), ", values[i], col_id[i]);
 	}
 
