@@ -144,7 +144,7 @@ double residual_error(u32 n, u32 *index, u32 *col_id, double *values, double b[n
 		b_norm += b[i] * b[i];
 		ax = 0.0;
 		for (u32 j = index[i]; j < index[i+1]; ++j)	{
-			ax += values[j] * x[col_id[j]];
+			ax += values[j] * x_kpp[col_id[j]];
 		}
 		res_norm += (b[i] - ax) * (b[i] - ax);
 		x[i] = x_kpp[i];
@@ -166,8 +166,9 @@ void jacobi(u32 n, u32 *index, u32 *col_id, double *values, double b[n], double 
 			u32 pos = 0;
 
 			for (u32 j = index[i]; j < index[i+1]; ++j)	{
-				if (col_id[j] != i)	{
-					x_kpp[i] -= values[j] * x[col_id[j]];
+				u32 id = col_id[j];
+				if (id != i)	{
+					x_kpp[i] -= values[j] * x[id];
 				}
 				else	{
 					pos = j;
@@ -198,12 +199,13 @@ void gs(u32 n, u32 *index, u32 *col_id, double *values, double b[n], double x[n]
 			u32 pos = 0;
 
 			for (u32 j = index[i]; j < index[i+1]; ++j)	{
-				if (col_id[j] != i)	{
-					if (col_id[j] < i)	{
-						x_kpp[i] -= values[j] * x_kpp[col_id[j]];
+				u32 id = col_id[j];
+				if (id != i)	{
+					if (id < i)	{
+						x_kpp[i] -= values[j] * x_kpp[id];
 					}
 					else	{
-						x_kpp[i] -= values[j] * x[col_id[j]];
+						x_kpp[i] -= values[j] * x[id];
 					}
 				} 
 				else	{
@@ -256,7 +258,7 @@ int main(int argc, char *argv[])	{
 	init_matrix_r(size, b, 'r');
 	build_matrix(n, index, col_id, values);
 	
-	print_csr(n, index, col_id, values);
+	// print_csr(n, index, col_id, values);
 	
 	init_matrix_r(size, x, 'z');
 	jacobi(n, index, col_id, values, b, x, threshold, max_iter);
