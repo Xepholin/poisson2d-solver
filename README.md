@@ -11,7 +11,7 @@ Stencil:
     \end{pmatrix}
 ```
 
-Puis résolution du système avec les méthodes de Jacobi et de Gauss-Seidel.
+Puis résolution du système ``Ax = b``, avec ``A`` une matrice de poisson, en utilisant les méthodes de Jacobi et de Gauss-Seidel.
 
 # Usage
 ```sh
