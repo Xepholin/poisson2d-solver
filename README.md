@@ -16,5 +16,5 @@ Puis résolution du système avec les méthodes de Jacobi et de Gauss-Seidel.
 # Usage
 ```sh
 $ make
-$ ./poisson
+$ ./poisson N MAX_ITER THRESHOLD
 ```
