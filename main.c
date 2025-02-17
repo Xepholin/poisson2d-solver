@@ -3,31 +3,29 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-typedef __uint32_t u32;
-
-void print_csr(u32 n, u32 *index, u32 *col_id, double *values) {
+void print_csr(int n, int *index, int *col_id, double *values) {
     printf("index\n");
-    u32 ind = n * n;
+    int ind = n * n;
 
-    for (u32 i = 0; i < ind + 1; ++i) {
+    for (int i = 0; i < ind + 1; ++i) {
         printf("%d ", index[i]);
     }
 
     printf("\n\n");
 
     printf("(values col_id)\n");
-    for (u32 i = 0; i < index[ind]; ++i) {
+    for (int i = 0; i < index[ind]; ++i) {
         printf("(%.1lf %d) ", values[i], col_id[i]);
     }
 
     printf("\n\n");
 
     printf("A =\n");
-    u32 dim = n * n;
-    u32 count = 0;
+    int dim = n * n;
+    int count = 0;
 
-    for (u32 i = 0; i < ind; ++i) {
-        for (u32 j = 0; j < dim; ++j) {
+    for (int i = 0; i < ind; ++i) {
+        for (int j = 0; j < dim; ++j) {
             if (col_id[count] == j) {
                 printf("%5.1lf", values[count]);
                 count++;
@@ -45,28 +43,28 @@ void print_csr(u32 n, u32 *index, u32 *col_id, double *values) {
     }
 }
 
-void print_vec(u32 n, double *a) {
-    for (u32 i = 0; i < n; ++i) {
+void print_vec(int n, double *a) {
+    for (int i = 0; i < n; ++i) {
         printf("%lf ", a[i]);
     }
     printf("\n");
 }
 
-void init_matrix_r(u32 n, double a[n], char m) {
+void init_matrix_r(int n, double a[n], char m) {
     // Random value per entry
     if (m == 'r' || m == 'R') {
-        for (u32 i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             a[i] = (double)RAND_MAX / (double)rand();
         }
     } else {  // Zeroing up the array
         if (m == 'z' || m == 'Z') {
-            for (u32 i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) {
                 a[i] = 0.0;
             }
         } else {  // Same value per entry
             if (m == 'c' || m == 'C') {
                 double c = (double)RAND_MAX / (double)rand();
-                for (u32 i = 0; i < n; i++) {
+                for (int i = 0; i < n; i++) {
                     a[i] = c;
                 }
             }
@@ -74,12 +72,12 @@ void init_matrix_r(u32 n, double a[n], char m) {
     }
 }
 
-void dgemv(u32 n, u32 *index, u32 *col_id, double *values, double *x, double *result) {
-    u32 ind = n * n;
+void dgemv(int n, int *index, int *col_id, double *values, double *x, double *result) {
+    int ind = n * n;
 
-    for (u32 i = 0; i < ind; ++i) {
+    for (int i = 0; i < ind; ++i) {
         double sum = 0.0;
-        for (u32 j = index[i]; j < index[i + 1]; ++j) {
+        for (int j = index[i]; j < index[i + 1]; ++j) {
             sum += values[j] * x[col_id[j]];
         }
 
@@ -87,28 +85,28 @@ void dgemv(u32 n, u32 *index, u32 *col_id, double *values, double *x, double *re
     }
 }
 
-double dotprod(u32 n, double *a, double *b) {
-	u32 ind = n * n;
+double dotprod(int n, double *a, double *b) {
+    int ind = n * n;
     double result = 0;
-    for (u32 i = 0; i < ind; ++i) {
+    for (int i = 0; i < ind; ++i) {
         result += a[i] * b[i];
     }
 
     return result;
 }
 
-void axpy(u32 n, double *a, double x, double y, double *result) {
-    for (u32 i = 0; i < n; ++i) {
+void axpy(int n, double *a, double x, double y, double *result) {
+    for (int i = 0; i < n; ++i) {
         result[i] = a[i] * x + y;
     }
 }
 
-void build_matrix(u32 n, u32 *index, u32 *col_id, double *values) {
-    u32 count = 0;
+void build_matrix(int n, int *index, int *col_id, double *values) {
+    int count = 0;
     index[0] = 0;
 
-    for (u32 i = 0; i < n; ++i) {
-        for (u32 j = 0; j < n; ++j) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
             if (i > 0) {
                 values[count] = -1.0;
                 col_id[count] = (i - 1) * n + j;
@@ -144,16 +142,16 @@ void build_matrix(u32 n, u32 *index, u32 *col_id, double *values) {
     index[n * n] = count;
 }
 
-double residual_error(u32 n, u32 *index, u32 *col_id, double *values, double b[n], double x[n], double x_kpp[n]) {
+double residual_error(int n, int *index, int *col_id, double *values, double b[n], double x[n], double x_kpp[n]) {
     double res_norm = 0.0;
     double b_norm = 0.0;
     double ax = 0.0;
-    u32 ind = n * n;
+    int ind = n * n;
 
-    for (u32 i = 0; i < ind; ++i) {
+    for (int i = 0; i < ind; ++i) {
         b_norm += b[i] * b[i];
         ax = 0.0;
-        for (u32 j = index[i]; j < index[i + 1]; ++j) {
+        for (int j = index[i]; j < index[i + 1]; ++j) {
             ax += values[j] * x_kpp[col_id[j]];
         }
         res_norm += (b[i] - ax) * (b[i] - ax);
@@ -163,21 +161,21 @@ double residual_error(u32 n, u32 *index, u32 *col_id, double *values, double b[n
     return sqrt(res_norm) / sqrt(b_norm);
 }
 
-void jacobi(u32 n, u32 *index, u32 *col_id, double *values, double b[n], double x[n], double threshold, u32 max_iter) {
-    u32 ind = n * n;
+void jacobi(int n, int *index, int *col_id, double *values, double b[n], double x[n], double threshold, int max_iter) {
+    int ind = n * n;
     double error = threshold + 1.0;
-    u32 iter = 0;
+    int iter = 0;
 
     double *x_kpp = calloc(n * n, sizeof(double));
 
     while (error > threshold && iter < max_iter) {
         // #pragma omp parallel for schedule(runtime)
-        for (u32 i = 0; i < ind; ++i) {
+        for (int i = 0; i < ind; ++i) {
             x_kpp[i] = b[i];
-            u32 pos = 0;
+            int pos = 0;
 
-            for (u32 j = index[i]; j < index[i + 1]; ++j) {
-                u32 id = col_id[j];
+            for (int j = index[i]; j < index[i + 1]; ++j) {
+                int id = col_id[j];
                 if (id != i) {
                     x_kpp[i] -= values[j] * x[id];
                 } else {
@@ -191,25 +189,25 @@ void jacobi(u32 n, u32 *index, u32 *col_id, double *values, double b[n], double 
         iter++;
     }
 
-    printf("Jacobi\nnb iteration: %d/%d\nerror: %lf (%lf)\n", iter, max_iter, error, threshold);
+    printf("\nnb iteration: %d/%d\nerror: %lf (%lf)\n", iter, max_iter, error, threshold);
 
     free(x_kpp);
 }
 
-void gs(u32 n, u32 *index, u32 *col_id, double *values, double b[n], double x[n], double threshold, u32 max_iter) {
-    u32 ind = n * n;
+void gs(int n, int *index, int *col_id, double *values, double b[n], double x[n], double threshold, int max_iter) {
+    int ind = n * n;
     double error = threshold + 1.0;
-    u32 iter = 0;
+    int iter = 0;
 
     double *x_kpp = calloc(n * n, sizeof(double));
 
     while (error > threshold && iter < max_iter) {
-        for (u32 i = 0; i < ind; ++i) {
+        for (int i = 0; i < ind; ++i) {
             x_kpp[i] = b[i];
-            u32 pos = 0;
+            int pos = 0;
 
-            for (u32 j = index[i]; j < index[i + 1]; ++j) {
-                u32 id = col_id[j];
+            for (int j = index[i]; j < index[i + 1]; ++j) {
+                int id = col_id[j];
                 if (id != i) {
                     if (id < i) {
                         x_kpp[i] -= values[j] * x_kpp[id];
@@ -227,19 +225,19 @@ void gs(u32 n, u32 *index, u32 *col_id, double *values, double b[n], double x[n]
         iter++;
     }
 
-    printf("Gauss-Seidel\nnb iteration: %d/%d\nerror: %lf (%lf)\n", iter, max_iter, error, threshold);
+    printf("\nnb iteration: %d/%d\nerror: %lf (%lf)\n", iter, max_iter, error, threshold);
     free(x_kpp);
 }
 
-void conj_grad(u32 n, u32 *index, u32 *col_id, double *values, double *b, double *x, double threshold, u32 max_iter) {
-	u32 ind = n * n;
-	
+void conj_grad(int n, int *index, int *col_id, double *values, double *b, double *x, double threshold, int max_iter) {
+    int ind = n * n;
+
     double *r = calloc(ind, sizeof(double));
     double *r_kpp = calloc(ind, sizeof(double));
     double *p = calloc(ind, sizeof(double));
     double *ax = calloc(ind, sizeof(double));
 
-    u32 iter = 0;
+    int iter = 0;
 
     if (!r || !r_kpp || !p || !ax) {
         perror("Error allocation");
@@ -248,7 +246,7 @@ void conj_grad(u32 n, u32 *index, u32 *col_id, double *values, double *b, double
 
     dgemv(n, index, col_id, values, x, r);
 
-    for (u32 i = 0; i < ind; ++i) {
+    for (int i = 0; i < ind; ++i) {
         r[i] = b[i] - r[i];
         p[i] = r[i];
     }
@@ -259,7 +257,7 @@ void conj_grad(u32 n, u32 *index, u32 *col_id, double *values, double *b, double
         double dot_r = dotprod(n, r, r);
         double alpha = dot_r / dotprod(n, ax, p);
 
-        for (u32 i = 0; i < ind; ++i) {
+        for (int i = 0; i < ind; ++i) {
             x[i] += alpha * p[i];
             r[i] = r[i] - alpha * ax[i];
         }
@@ -272,7 +270,7 @@ void conj_grad(u32 n, u32 *index, u32 *col_id, double *values, double *b, double
 
         double beta = dot_rpp / dot_r;
 
-        for (u32 i = 0; i < ind; ++i) {
+        for (int i = 0; i < ind; ++i) {
             p[i] = r[i] + beta * p[i];
         }
 
@@ -281,7 +279,7 @@ void conj_grad(u32 n, u32 *index, u32 *col_id, double *values, double *b, double
 
     double error = residual_error(n, index, col_id, values, b, x, x);
 
-    printf("Gradient-Conjugué\nnb iteration: %d/%d\nerror: %lf (%lf)\n", iter, max_iter, error, threshold);
+    printf("\nnb iteration: %d/%d\nerror: %lf (%lf)\n", iter, max_iter, error, threshold);
 
     free(r);
     free(r_kpp);
@@ -295,17 +293,18 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    u32 n = strtol(argv[1], NULL, 10);
-    u32 max_iter = strtol(argv[2], NULL, 10);
+    int n = strtol(argv[1], NULL, 10);
+    int max_iter = strtol(argv[2], NULL, 10);
     double threshold = strtod(argv[3], NULL);
 
     srand(getpid());
 
-    u32 size = n * n;
-    u32 total = 5 * (n * n) - 4 * n;
+    int size = n * n;
+    int total = 5 * (n * n) - 4 * n;
+    int count = 0;
 
-    u32 *index = aligned_alloc(32, sizeof(u32) * size + 1);
-    u32 *col_id = aligned_alloc(32, sizeof(u32) * total);
+    int *index = aligned_alloc(32, sizeof(int) * size + 1);
+    int *col_id = aligned_alloc(32, sizeof(int) * total);
     double *values = aligned_alloc(32, sizeof(double) * total);
 
     double *x = aligned_alloc(32, sizeof(double) * size);
@@ -319,54 +318,123 @@ int main(int argc, char *argv[]) {
     }
 
     init_matrix_r(size, b, 'r');
+
+    printf("Building matrix %dx%d ...\n", size, size);
     build_matrix(n, index, col_id, values);
 
     // print_csr(n, index, col_id, values);
 
-    printf("\n-----------------------------------\n");
+    //------------------------ Jacobi ----------------------------------------
 
     init_matrix_r(size, x, 'z');
+
+    printf("\nCompute Jacobi ...");
     jacobi(n, index, col_id, values, b, x, threshold, max_iter);
 
-    printf("\nx =\n");
-    print_vec(size, x);
-
+    printf("Checking ... ");
     dgemv(n, index, col_id, values, x, ax);
 
-    printf("\ndgemv =\n");
-    print_vec(size, ax);
-    print_vec(size, b);
-    printf("b =\n");
+    for (int i = 0; i < size; ++i) {
+        if (fabs(ax[i] - b[i]) < threshold * max_iter) {
+            count++;
+        }
+    }
 
-    printf("\n-----------------------------------\n");
+    if (count == size) {
+        printf("passed\n");
+    } else {
+        printf("failed\n");
+        printf("\ndiff:\n");
+        int error = 0;
+        for (int i = 0; i < size; ++i) {
+            if (fabs(ax[i] - b[i]) >= threshold * max_iter) {
+                error++;
+
+                if (error == 6) {
+                    printf("...\n");
+                    break;
+                }
+                
+                printf("%f %f\n", ax[i], b[i]);
+            }
+        }
+    }
+
+    //------------------------ Gauss-Seidel ------------------------------------------
 
     init_matrix_r(size, x, 'z');
+
+    printf("\nCompute Gauss-Seidel ...");
     gs(n, index, col_id, values, b, x, threshold, max_iter);
 
-    printf("\nx =\n");
-    print_vec(size, x);
-
+    printf("Checking ... ");
     dgemv(n, index, col_id, values, x, ax);
 
-    printf("\ndgemv =\n");
-    print_vec(size, ax);
-    print_vec(size, b);
-    printf("b =\n");
+    count = 0;
+    for (int i = 0; i < size; ++i) {
+        if (fabs(ax[i] - b[i]) < threshold * max_iter) {
+            count++;
+        }
+    }
 
-    printf("\n-----------------------------------\n");
+    if (count == size) {
+        printf("passed\n");
+    } else {
+        printf("failed\n");
+        printf("\ndiff:\n");
+        int error = 0;
+        for (int i = 0; i < size; ++i) {
+            if (fabs(ax[i] - b[i]) >= threshold * max_iter) {
+                error++;
+
+                if (error == 6) {
+                    printf("...\n");
+                    break;
+                }
+                
+                printf("%f %f\n", ax[i], b[i]);
+            }
+        }
+    }
+
+    //----------------------- Conjugate Gradient -----------------------------------------
 
     init_matrix_r(size, x, 'z');
+
+    printf("\nCompute Conjugate Gradient ...");
     conj_grad(n, index, col_id, values, b, x, threshold, max_iter);
 
-    printf("\nx =\n");
-    print_vec(size, x);
-
+    printf("Checking ... ");
     dgemv(n, index, col_id, values, x, ax);
 
-    printf("\ndgemv =\n");
-    print_vec(size, ax);
-    print_vec(size, b);
-    printf("b =\n");
+    count = 0;
+    for (int i = 0; i < size; ++i) {
+        if (fabs(ax[i] - b[i]) < threshold * max_iter) {
+            count++;
+        }
+    }
+
+    if (count == size) {
+        printf("passed\n");
+    } else {
+        printf("failed\n");
+        printf("\ndiff:\n");
+        int error = 0;
+        for (int i = 0; i < size; ++i) {
+            if (fabs(ax[i] - b[i]) >= threshold * max_iter) {
+                error++;
+
+                if (error == 6) {
+                    printf("...\n");
+                    break;
+                }
+                
+                printf("%f %f\n", ax[i], b[i]);
+            }
+        }
+    }
+
+    //-------------------------------------------------------------------------------------
 
     free(values);
     free(col_id);

@@ -11,7 +11,7 @@ FILES=main.c
 all: poisson
 
 run: poisson
-	./poisson 4 150 0.0000001
+	./poisson 4 150 0.000001
 
 poisson: $(FILES)
 ifeq ($(CC),icc)
