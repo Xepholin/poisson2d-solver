@@ -322,8 +322,6 @@ int main(int argc, char *argv[]) {
     printf("Building matrix %dx%d ...\n", size, size);
     build_matrix(n, index, col_id, values);
 
-    // print_csr(n, index, col_id, values);
-
     //------------------------ Jacobi ----------------------------------------
 
     init_matrix_r(size, x, 'z');

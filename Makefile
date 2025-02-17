@@ -4,7 +4,7 @@ CFLAGS=-g -Wall -Wextra -march=native
 OFLAGS=-O3
 
 INTEL_LFLAGS=-qmkl
-GNU_LFLAGS=-lm -fopenmp
+GNU_LFLAGS=-lm
 
 FILES=main.c
 
