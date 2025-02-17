@@ -328,7 +328,7 @@ int main(int argc, char *argv[]) {
 
     init_matrix_r(size, x, 'z');
 
-    printf("\nCompute Jacobi ...");
+    printf("\nComputing Jacobi ...");
     jacobi(n, index, col_id, values, b, x, threshold, max_iter);
 
     printf("Checking ... ");
@@ -364,7 +364,7 @@ int main(int argc, char *argv[]) {
 
     init_matrix_r(size, x, 'z');
 
-    printf("\nCompute Gauss-Seidel ...");
+    printf("\nComputing Gauss-Seidel ...");
     gs(n, index, col_id, values, b, x, threshold, max_iter);
 
     printf("Checking ... ");
@@ -401,7 +401,7 @@ int main(int argc, char *argv[]) {
 
     init_matrix_r(size, x, 'z');
 
-    printf("\nCompute Conjugate Gradient ...");
+    printf("\nComputing Conjugate Gradient ...");
     conj_grad(n, index, col_id, values, b, x, threshold, max_iter);
 
     printf("Checking ... ");
